@@ -38,7 +38,7 @@ public class LoginActivity extends Activity {
 		});
 
 		// Check if there is a currently logged in user
-		// and they are linked to a Facebook account.
+		// and it's linked to a Facebook account.
 		ParseUser currentUser = ParseUser.getCurrentUser();
 		if ((currentUser != null) && ParseFacebookUtils.isLinked(currentUser)) {
 			// Go to the user info activity
@@ -60,24 +60,24 @@ public class LoginActivity extends Activity {
 	}
 
 	private void onLoginButtonClicked() {
-		LoginActivity.this.progressDialog = ProgressDialog.show(
-				LoginActivity.this, "", "Logging in...", true);
-		List<String> permissions = Arrays.asList("basic_info", "user_about_me",
-				"user_relationships", "user_birthday", "user_location");
+		LoginActivity.this.progressDialog = 
+				ProgressDialog.show(LoginActivity.this, "", "Logging in...", true);
+		
+		List<String> permissions = Arrays.asList("public_profile", "email");
+		// NOTE: for extended permissions, like "user_about_me", your app must be reviewed by the Facebook team
+		// (https://developers.facebook.com/docs/facebook-login/permissions/)
+		
 		ParseFacebookUtils.logIn(permissions, this, new LogInCallback() {
 			@Override
 			public void done(ParseUser user, ParseException err) {
 				LoginActivity.this.progressDialog.dismiss();
 				if (user == null) {
-					Log.d(IntegratingFacebookTutorialApplication.TAG,
-							"Uh oh. The user cancelled the Facebook login.");
+					Log.d(IntegratingFacebookTutorialApplication.TAG, "Uh oh. The user cancelled the Facebook login.");
 				} else if (user.isNew()) {
-					Log.d(IntegratingFacebookTutorialApplication.TAG,
-							"User signed up and logged in through Facebook!");
+					Log.d(IntegratingFacebookTutorialApplication.TAG, "User signed up and logged in through Facebook!");
 					showUserDetailsActivity();
 				} else {
-					Log.d(IntegratingFacebookTutorialApplication.TAG,
-							"User logged in through Facebook!");
+					Log.d(IntegratingFacebookTutorialApplication.TAG, "User logged in through Facebook!");
 					showUserDetailsActivity();
 				}
 			}
