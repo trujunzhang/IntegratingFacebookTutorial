@@ -24,10 +24,8 @@ public class UserDetailsActivity extends Activity {
 
 	private ProfilePictureView userProfilePictureView;
 	private TextView userNameView;
-	private TextView userLocationView;
 	private TextView userGenderView;
-	private TextView userDateOfBirthView;
-	private TextView userRelationshipView;
+	private TextView userEmailView;
 	private Button logoutButton;
 
 	@Override
@@ -38,10 +36,8 @@ public class UserDetailsActivity extends Activity {
 
 		userProfilePictureView = (ProfilePictureView) findViewById(R.id.userProfilePicture);
 		userNameView = (TextView) findViewById(R.id.userName);
-		userLocationView = (TextView) findViewById(R.id.userLocation);
 		userGenderView = (TextView) findViewById(R.id.userGender);
-		userDateOfBirthView = (TextView) findViewById(R.id.userDateOfBirth);
-		userRelationshipView = (TextView) findViewById(R.id.userRelationship);
+		userEmailView = (TextView) findViewById(R.id.userEmail);
 
 		logoutButton = (Button) findViewById(R.id.logoutButton);
 		logoutButton.setOnClickListener(new View.OnClickListener() {
@@ -76,112 +72,84 @@ public class UserDetailsActivity extends Activity {
 
 	private void makeMeRequest() {
 		Request request = Request.newMeRequest(ParseFacebookUtils.getSession(),
-				new Request.GraphUserCallback() {
-					@Override
-					public void onCompleted(GraphUser user, Response response) {
-						if (user != null) {
-							// Create a JSON object to hold the profile info
-							JSONObject userProfile = new JSONObject();
-							try {
-								// Populate the JSON object
-								userProfile.put("facebookId", user.getId());
-								userProfile.put("name", user.getName());
-								if (user.getLocation().getProperty("name") != null) {
-									userProfile.put("location", (String) user
-											.getLocation().getProperty("name"));
-								}
-								if (user.getProperty("gender") != null) {
-									userProfile.put("gender",
-											(String) user.getProperty("gender"));
-								}
-								if (user.getBirthday() != null) {
-									userProfile.put("birthday",
-											user.getBirthday());
-								}
-								if (user.getProperty("relationship_status") != null) {
-									userProfile
-											.put("relationship_status",
-													(String) user
-															.getProperty("relationship_status"));
-								}
-
-								// Save the user profile info in a user property
-								ParseUser currentUser = ParseUser
-										.getCurrentUser();
-								currentUser.put("profile", userProfile);
-								currentUser.saveInBackground();
-
-								// Show the user info
-								updateViewsWithProfileInfo();
-							} catch (JSONException e) {
-								Log.d(IntegratingFacebookTutorialApplication.TAG,
-										"Error parsing returned user data.");
+			new Request.GraphUserCallback() {
+				@Override
+				public void onCompleted(GraphUser user, Response response) {
+					if (user != null) {
+						// Create a JSON object to hold the profile info
+						JSONObject userProfile = new JSONObject();
+						try {
+							// Populate the JSON object
+							userProfile.put("facebookId", user.getId());
+							userProfile.put("name", user.getName());
+							if (user.getProperty("gender") != null) {
+								userProfile.put("gender", (String) user.getProperty("gender"));
+							}
+							if (user.getProperty("email") != null) {
+								userProfile.put("email", (String) user.getProperty("email"));
 							}
 
-						} else if (response.getError() != null) {
-							if ((response.getError().getCategory() == FacebookRequestError.Category.AUTHENTICATION_RETRY)
-									|| (response.getError().getCategory() == FacebookRequestError.Category.AUTHENTICATION_REOPEN_SESSION)) {
-								Log.d(IntegratingFacebookTutorialApplication.TAG,
-										"The facebook session was invalidated.");
-								onLogoutButtonClicked();
-							} else {
-								Log.d(IntegratingFacebookTutorialApplication.TAG,
-										"Some other error: "
-												+ response.getError()
-														.getErrorMessage());
-							}
+							// Save the user profile info in a user property
+							ParseUser currentUser = ParseUser.getCurrentUser();
+							currentUser.put("profile", userProfile);
+							currentUser.saveInBackground();
+
+							// Show the user info
+							updateViewsWithProfileInfo();
+						} catch (JSONException e) {
+							Log.d(IntegratingFacebookTutorialApplication.TAG, "Error parsing returned user data. " + e);
+						}
+
+					} else if (response.getError() != null) {
+						if ((response.getError().getCategory() == FacebookRequestError.Category.AUTHENTICATION_RETRY) || 
+							(response.getError().getCategory() == FacebookRequestError.Category.AUTHENTICATION_REOPEN_SESSION)) {
+							Log.d(IntegratingFacebookTutorialApplication.TAG, "The facebook session was invalidated." + response.getError());
+							onLogoutButtonClicked();
+						} else {
+							Log.d(IntegratingFacebookTutorialApplication.TAG, 
+								"Some other error: " + response.getError());
 						}
 					}
-				});
+				}
+			}
+		);
 		request.executeAsync();
-
 	}
 
 	private void updateViewsWithProfileInfo() {
 		ParseUser currentUser = ParseUser.getCurrentUser();
-		if (currentUser.get("profile") != null) {
+		if (currentUser.has("profile")) {
 			JSONObject userProfile = currentUser.getJSONObject("profile");
 			try {
-				if (userProfile.getString("facebookId") != null) {
-					String facebookId = userProfile.get("facebookId")
-							.toString();
-					userProfilePictureView.setProfileId(facebookId);
+				
+				if (userProfile.has("facebookId")) {
+					userProfilePictureView.setProfileId(userProfile.getString("facebookId"));
 				} else {
 					// Show the default, blank user profile picture
 					userProfilePictureView.setProfileId(null);
 				}
-				if (userProfile.getString("name") != null) {
+				
+				if (userProfile.has("name")) {
 					userNameView.setText(userProfile.getString("name"));
 				} else {
 					userNameView.setText("");
 				}
-				if (userProfile.getString("location") != null) {
-					userLocationView.setText(userProfile.getString("location"));
-				} else {
-					userLocationView.setText("");
-				}
-				if (userProfile.getString("gender") != null) {
+				
+				if (userProfile.has("gender")) {
 					userGenderView.setText(userProfile.getString("gender"));
 				} else {
 					userGenderView.setText("");
 				}
-				if (userProfile.getString("birthday") != null) {
-					userDateOfBirthView.setText(userProfile
-							.getString("birthday"));
+				
+				if (userProfile.has("email")) {
+					userEmailView.setText(userProfile.getString("email"));
 				} else {
-					userDateOfBirthView.setText("");
+					userEmailView.setText("");
 				}
-				if (userProfile.getString("relationship_status") != null) {
-					userRelationshipView.setText(userProfile
-							.getString("relationship_status"));
-				} else {
-					userRelationshipView.setText("");
-				}
+				
 			} catch (JSONException e) {
-				Log.d(IntegratingFacebookTutorialApplication.TAG,
-						"Error parsing saved user data.");
+				Log.d(IntegratingFacebookTutorialApplication.TAG, "Error parsing saved user data.");
 			}
-
 		}
 	}
 
