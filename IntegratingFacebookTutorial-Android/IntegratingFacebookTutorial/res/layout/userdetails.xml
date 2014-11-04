@@ -34,8 +34,7 @@
             android:layout_marginTop="20dp"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:gravity="center_horizontal"
-            android:background="@drawable/table_round_shape">
+            android:gravity="center_horizontal">
         <TableRow>
             <TextView
                 android:layout_width="wrap_content"
