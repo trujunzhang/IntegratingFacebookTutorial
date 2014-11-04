@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.facebook.FacebookRequestError;
@@ -26,7 +25,6 @@ public class UserDetailsActivity extends Activity {
 	private TextView userNameView;
 	private TextView userGenderView;
 	private TextView userEmailView;
-	private Button logoutButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,14 +36,6 @@ public class UserDetailsActivity extends Activity {
 		userNameView = (TextView) findViewById(R.id.userName);
 		userGenderView = (TextView) findViewById(R.id.userGender);
 		userEmailView = (TextView) findViewById(R.id.userEmail);
-
-		logoutButton = (Button) findViewById(R.id.logoutButton);
-		logoutButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				onLogoutButtonClicked();
-			}
-		});
 
 		// Fetch Facebook user info if the session is active
 		Session session = ParseFacebookUtils.getSession();
@@ -83,10 +73,10 @@ public class UserDetailsActivity extends Activity {
 							userProfile.put("facebookId", user.getId());
 							userProfile.put("name", user.getName());
 							if (user.getProperty("gender") != null) {
-								userProfile.put("gender", (String) user.getProperty("gender"));
+								userProfile.put("gender", user.getProperty("gender"));
 							}
 							if (user.getProperty("email") != null) {
-								userProfile.put("email", (String) user.getProperty("email"));
+								userProfile.put("email", user.getProperty("email"));
 							}
 
 							// Save the user profile info in a user property
@@ -104,7 +94,7 @@ public class UserDetailsActivity extends Activity {
 						if ((response.getError().getCategory() == FacebookRequestError.Category.AUTHENTICATION_RETRY) || 
 							(response.getError().getCategory() == FacebookRequestError.Category.AUTHENTICATION_REOPEN_SESSION)) {
 							Log.d(IntegratingFacebookTutorialApplication.TAG, "The facebook session was invalidated." + response.getError());
-							onLogoutButtonClicked();
+							logout();
 						} else {
 							Log.d(IntegratingFacebookTutorialApplication.TAG, 
 								"Some other error: " + response.getError());
@@ -153,13 +143,17 @@ public class UserDetailsActivity extends Activity {
 		}
 	}
 
-	private void onLogoutButtonClicked() {
-		// Log the user out
-		ParseUser.logOut();
-
-		// Go to the login view
-		startLoginActivity();
+	public void onLogoutClick(View v) {
+    logout();
 	}
+
+  private void logout() {
+    // Log the user out
+    ParseUser.logOut();
+
+    // Go to the login view
+    startLoginActivity();
+  }
 
 	private void startLoginActivity() {
 		Intent intent = new Intent(this, LoginActivity.class);
