@@ -6,15 +6,15 @@ import com.parse.Parse;
 
 public class IntegratingFacebookTutorialApplication extends Application {
 
-	static final String TAG = "MyApp";
+  static final String TAG = "MyApp";
 
-	@Override
-	public void onCreate() {
-		super.onCreate();
+  @Override
+  public void onCreate() {
+    super.onCreate();
 
-		Parse.initialize(this, 
-				"YOUR_PARSE_APPLICATION_ID",
-				"YOUR_PARSE_CLIENT_ID"
-		);
-	}
+    Parse.initialize(this, 
+        "YOUR_PARSE_APPLICATION_ID",
+        "YOUR_PARSE_CLIENT_ID"
+    );
+  }
 }
