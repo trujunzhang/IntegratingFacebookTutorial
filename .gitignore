@@ -11,3 +11,25 @@
 *.sln
 IntegratingFacebookTutorial-Unity/Library
 IntegratingFacebookTutorial-Unity/Temp
+
+# Emacs
+\#*
+*~
+.\#*
+.\#~
+.*~
+
+# Java VM
+*.class
+
+# Application
+*.apk
+*.ap_
+
+# DEX VM
+*.dex
+
+# Eclipse
+IntegratingFacebookTutorial-Android/.classpath
+IntegratingFacebookTutorial-Android/.metadata
+IntegratingFacebookTutorial-Android/.project
