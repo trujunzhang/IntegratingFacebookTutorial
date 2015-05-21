@@ -38,17 +38,17 @@ public class LoginActivity extends Activity {
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    ParseFacebookUtils.finishAuthentication(requestCode, resultCode, data);
+    ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
   }
 
   public void onLoginClick(View v) {
     progressDialog = ProgressDialog.show(LoginActivity.this, "", "Logging in...", true);
-    
+
     List<String> permissions = Arrays.asList("public_profile", "email");
     // NOTE: for extended permissions, like "user_about_me", your app must be reviewed by the Facebook team
     // (https://developers.facebook.com/docs/facebook-login/permissions/)
-    
-    ParseFacebookUtils.logIn(permissions, this, new LogInCallback() {
+
+    ParseFacebookUtils.logInWithReadPermissionsInBackground(this, permissions, new LogInCallback() {
       @Override
       public void done(ParseUser user, ParseException err) {
         progressDialog.dismiss();
