@@ -1,8 +1,5 @@
 package com.parse.integratingfacebooktutorial;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,14 +7,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.facebook.FacebookRequestError;
-import com.facebook.Request;
-import com.facebook.Response;
-import com.facebook.Session;
-import com.facebook.model.GraphUser;
-import com.facebook.widget.ProfilePictureView;
-import com.parse.ParseFacebookUtils;
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.widget.ProfilePictureView;
 import com.parse.ParseUser;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class UserDetailsActivity extends Activity {
 
@@ -37,9 +34,10 @@ public class UserDetailsActivity extends Activity {
     userGenderView = (TextView) findViewById(R.id.userGender);
     userEmailView = (TextView) findViewById(R.id.userEmail);
 
-    // Fetch Facebook user info if the session is active
-    Session session = ParseFacebookUtils.getSession();
-    if (session != null && session.isOpened()) {
+
+    //Fetch Facebook user info if it is logged
+    ParseUser currentUser = ParseUser.getCurrentUser();
+    if ((currentUser != null) && currentUser.isAuthenticated()) {
       makeMeRequest();
     }
   }
@@ -61,48 +59,55 @@ public class UserDetailsActivity extends Activity {
   }
 
   private void makeMeRequest() {
-    Request request = Request.newMeRequest(ParseFacebookUtils.getSession(),
-      new Request.GraphUserCallback() {
-        @Override
-        public void onCompleted(GraphUser user, Response response) {
-          if (user != null) {
-            // Create a JSON object to hold the profile info
-            JSONObject userProfile = new JSONObject();
-            try {
-              // Populate the JSON object
-              userProfile.put("facebookId", user.getId());
-              userProfile.put("name", user.getName());
-              if (user.getProperty("gender") != null) {
-                userProfile.put("gender", user.getProperty("gender"));
+    GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
+            new GraphRequest.GraphJSONObjectCallback() {
+              @Override
+              public void onCompleted(JSONObject jsonObject, GraphResponse graphResponse) {
+                if (jsonObject != null) {
+                  JSONObject userProfile = new JSONObject();
+
+                  try {
+                    userProfile.put("facebookId", jsonObject.getLong("id"));
+                    userProfile.put("name", jsonObject.getString("name"));
+
+                    if (jsonObject.getString("gender") != null)
+                      userProfile.put("gender", jsonObject.getString("gender"));
+
+                    if (jsonObject.getString("email") != null)
+                      userProfile.put("email", jsonObject.getString("email"));
+
+                    // Save the user profile info in a user property
+                    ParseUser currentUser = ParseUser.getCurrentUser();
+                    currentUser.put("profile", userProfile);
+                    currentUser.saveInBackground();
+
+                    // Show the user info
+                    updateViewsWithProfileInfo();
+                  } catch (JSONException e) {
+                    Log.d(IntegratingFacebookTutorialApplication.TAG,
+                            "Error parsing returned user data. " + e);
+                  }
+                } else if (graphResponse.getError() != null) {
+                  switch (graphResponse.getError().getCategory()) {
+                    case LOGIN_RECOVERABLE:
+                      Log.d(IntegratingFacebookTutorialApplication.TAG,
+                              "Authentication error: " + graphResponse.getError());
+                      break;
+
+                    case TRANSIENT:
+                      Log.d(IntegratingFacebookTutorialApplication.TAG,
+                              "Transient error. Try again. " + graphResponse.getError());
+                      break;
+
+                    case OTHER:
+                      Log.d(IntegratingFacebookTutorialApplication.TAG,
+                              "Some other error: " + graphResponse.getError());
+                      break;
+                  }
+                }
               }
-              if (user.getProperty("email") != null) {
-                userProfile.put("email", user.getProperty("email"));
-              }
+            });
 
-              // Save the user profile info in a user property
-              ParseUser currentUser = ParseUser.getCurrentUser();
-              currentUser.put("profile", userProfile);
-              currentUser.saveInBackground();
-
-              // Show the user info
-              updateViewsWithProfileInfo();
-            } catch (JSONException e) {
-              Log.d(IntegratingFacebookTutorialApplication.TAG, "Error parsing returned user data. " + e);
-            }
-
-          } else if (response.getError() != null) {
-            if ((response.getError().getCategory() == FacebookRequestError.Category.AUTHENTICATION_RETRY) || 
-              (response.getError().getCategory() == FacebookRequestError.Category.AUTHENTICATION_REOPEN_SESSION)) {
-              Log.d(IntegratingFacebookTutorialApplication.TAG, "The facebook session was invalidated." + response.getError());
-              logout();
-            } else {
-              Log.d(IntegratingFacebookTutorialApplication.TAG, 
-                "Some other error: " + response.getError());
-            }
-          }
-        }
-      }
-    );
     request.executeAsync();
   }
 
@@ -111,32 +116,32 @@ public class UserDetailsActivity extends Activity {
     if (currentUser.has("profile")) {
       JSONObject userProfile = currentUser.getJSONObject("profile");
       try {
-        
+
         if (userProfile.has("facebookId")) {
           userProfilePictureView.setProfileId(userProfile.getString("facebookId"));
         } else {
           // Show the default, blank user profile picture
           userProfilePictureView.setProfileId(null);
         }
-        
+
         if (userProfile.has("name")) {
           userNameView.setText(userProfile.getString("name"));
         } else {
           userNameView.setText("");
         }
-        
+
         if (userProfile.has("gender")) {
           userGenderView.setText(userProfile.getString("gender"));
         } else {
           userGenderView.setText("");
         }
-        
+
         if (userProfile.has("email")) {
           userEmailView.setText(userProfile.getString("email"));
         } else {
           userEmailView.setText("");
         }
-        
+
       } catch (JSONException e) {
         Log.d(IntegratingFacebookTutorialApplication.TAG, "Error parsing saved user data.");
       }
