@@ -17,8 +17,8 @@ public class IntegratingFacebookTutorialApplication extends Application {
       FacebookSdk.sdkInitialize(getApplicationContext());
 
       Parse.initialize(this,
-              "YOUR_PARSE_APPLICATION_ID",
-              "YOUR_PARSE_CLIENT_ID"
+              "cFOCgoE6v77JoeGXkF5cK5az4FLM5twfdOCGBphU",
+              "eJ5fVdx0SO8cXrZ8mTxxwREK34wpZ6VMcHBumKZl"
       );
 
       ParseFacebookUtils.initialize(this);

@@ -34,11 +34,14 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    
+
     // ****************************************************************************
     // Fill in with your Parse credentials:
     // ****************************************************************************
-    // [Parse setApplicationId:@"your_application_id" clientKey:@"your_client_key"];
+    //[Parse setApplicationId:@"your_application_id" clientKey:@"your_client_key"];
+
+    [Parse setApplicationId:@"cFOCgoE6v77JoeGXkF5cK5az4FLM5twfdOCGBphU"
+                  clientKey:@"eJ5fVdx0SO8cXrZ8mTxxwREK34wpZ6VMcHBumKZl"];
 
     // ****************************************************************************
     // Your Facebook application id is configured in Info.plist.
@@ -60,7 +63,7 @@
     return [FBAppCall handleOpenURL:url
                   sourceApplication:sourceApplication
                         withSession:[PFFacebookUtils session]];
-} 
+}
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     /*

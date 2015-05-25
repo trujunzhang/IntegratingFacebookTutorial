@@ -239,6 +239,11 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0510;
+				TargetAttributes = {
+					D4DA79E914D3345A0055F672 = {
+						DevelopmentTeam = VCRS784KF3;
+					};
+				};
 			};
 			buildConfigurationList = D4DA79E414D3345A0055F672 /* Build configuration list for PBXProject "IntegratingFacebookTutorial" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -372,6 +377,7 @@
 		D4DA7A0314D3345A0055F672 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
@@ -380,6 +386,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "IntegratingFacebookTutorial/Supporting Files/IntegratingFacebookTutorial-Prefix.pch";
 				INFOPLIST_FILE = "IntegratingFacebookTutorial/Supporting Files/IntegratingFacebookTutorial-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				PRODUCT_NAME = IntegratingFacebookTutorial;
 			};
 			name = Debug;
@@ -387,6 +394,7 @@
 		D4DA7A0414D3345A0055F672 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
@@ -395,6 +403,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "IntegratingFacebookTutorial/Supporting Files/IntegratingFacebookTutorial-Prefix.pch";
 				INFOPLIST_FILE = "IntegratingFacebookTutorial/Supporting Files/IntegratingFacebookTutorial-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				PRODUCT_NAME = IntegratingFacebookTutorial;
 			};
 			name = Release;
